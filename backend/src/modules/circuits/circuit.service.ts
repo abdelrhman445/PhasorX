@@ -6,7 +6,7 @@ export class CircuitService {
     return await circuit.save();
   }
 
-  static async getCircuitsByUser(ownerId: string) {
+  static async getCircuitsByOwner(ownerId: string) {
     return await Circuit.find({ ownerId }).sort({ createdAt: -1 });
   }
 

@@ -2,9 +2,11 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../users/user.model';
+import { validateAuthInput } from './auth.validation';
+import { ENV } from '../../config/env.config';
 
 const generateToken = (id: string, role: string) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET || 'super_secret_phasorx_key', {
+  return jwt.sign({ id, role }, ENV.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -12,6 +14,17 @@ const generateToken = (id: string, role: string) => {
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      res.status(400).json({ success: false, message: 'الاسم والبريد الإلكتروني وكلمة المرور مطلوبين' });
+      return;
+    }
+
+    const validation = validateAuthInput({ email, password, name });
+    if (!validation.valid) {
+      res.status(400).json({ success: false, message: validation.message });
+      return;
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -28,7 +41,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res.status(201).json({
       success: true,
       token: generateToken(user.id, user.role),
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message });
@@ -38,6 +51,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ success: false, message: 'البريد الإلكتروني وكلمة المرور مطلوبين' });
+      return;
+    }
+
+    const validation = validateAuthInput({ email, password });
+    if (!validation.valid) {
+      res.status(400).json({ success: false, message: validation.message });
+      return;
+    }
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -54,7 +78,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
       success: true,
       token: generateToken(user.id, user.role),
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message });
