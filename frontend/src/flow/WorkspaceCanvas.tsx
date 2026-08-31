@@ -155,6 +155,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
         label: n.data.label,
         pressed: n.data.pressed,
         delaySeconds: n.data.delaySeconds,
+        value: n.data.value,
       },
     })),
     wires: edges.map((e) => ({

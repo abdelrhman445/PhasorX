@@ -17,6 +17,14 @@
 //   performs a static (snapshot) analysis, not a real-time tick
 //   simulation, so the delay value is informational only and is
 //   echoed back in the result for the UI to display.
+// - resistor / capacitor / inductor: this engine reasons about
+//   topology and energization (a node is "live" or it isn't), not
+//   about impedance, phasors, or voltage/current magnitudes. These
+//   three are therefore modeled as always-conducting pass-throughs
+//   so they can sit in series in a rung without breaking continuity,
+//   and their value (Ω / F / H) is carried purely as a label for the
+//   diagram. Real AC impedance analysis is a different, much larger
+//   engine and is intentionally not claimed here.
 
 export type ComponentType =
   | 'power'
@@ -25,7 +33,25 @@ export type ComponentType =
   | 'pushButtonNC'
   | 'contactor'
   | 'relay'
-  | 'timer';
+  | 'timer'
+  // ---- protective / manual switching gear (toggle: data.pressed === true => OPEN) ----
+  | 'isolatorSwitch'
+  | 'circuitBreaker'
+  | 'fuse'
+  | 'overloadRelay'
+  // ---- mechanically actuated switches (momentary: reuse pushButton bridge semantics) ----
+  | 'emergencyStop'
+  | 'limitSwitchNO'
+  | 'limitSwitchNC'
+  // ---- selector ----
+  | 'selectorSwitch'
+  // ---- basic passive components (modeled as always-conducting pass-throughs; see note below) ----
+  | 'resistor'
+  | 'capacitor'
+  | 'inductor'
+  // ---- indicator / bus ----
+  | 'pilotLamp'
+  | 'terminalBlock';
 
 export interface SimNodeInput {
   nodeId: string;
@@ -142,6 +168,142 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       // On-delay (TON): NO closes once the delay has elapsed (steady-state assumption).
       { pinA: '15', pinB: '16', label: 'Delayed NO (15-16)', isClosed: ({ coilEnergized }) => coilEnergized },
       { pinA: '17', pinB: '18', label: 'Delayed NC (17-18)', isClosed: ({ coilEnergized }) => !coilEnergized },
+    ],
+  },
+
+  // ==========================================================
+  // Protective / manual switching gear.
+  // All four share the same shape: normally CLOSED (conducting),
+  // and `data.pressed === true` flips them OPEN — i.e. "pressed"
+  // here means "switched off / tripped / blown", reusing the same
+  // pressed/onTogglePress plumbing the UI already has for buttons.
+  // ==========================================================
+  isolatorSwitch: {
+    type: 'isolatorSwitch',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'Isolator (IN-OUT)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+  circuitBreaker: {
+    type: 'circuitBreaker',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'MCB (IN-OUT)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+  fuse: {
+    type: 'fuse',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'Fuse (IN-OUT)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+  overloadRelay: {
+    type: 'overloadRelay',
+    sourcePins: [],
+    pins: ['95', '96'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: '95', pinB: '96', label: 'Thermal OL NC (95-96)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+
+  // ==========================================================
+  // Mechanically actuated switches — identical bridge semantics
+  // to pushButtonNO/NC, kept as distinct types for correct
+  // labeling/iconography in the diagram.
+  // ==========================================================
+  emergencyStop: {
+    type: 'emergencyStop',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'E-STOP NC (IN-OUT)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+  limitSwitchNO: {
+    type: 'limitSwitchNO',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'Limit switch NO (IN-OUT)', isClosed: ({ pressed }) => pressed === true },
+    ],
+  },
+  limitSwitchNC: {
+    type: 'limitSwitchNC',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'IN', pinB: 'OUT', label: 'Limit switch NC (IN-OUT)', isClosed: ({ pressed }) => pressed !== true },
+    ],
+  },
+
+  // 2-position selector: pressed === false -> COM routed to OUT1, pressed === true -> COM routed to OUT2.
+  selectorSwitch: {
+    type: 'selectorSwitch',
+    sourcePins: [],
+    pins: ['COM', 'OUT1', 'OUT2'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'COM', pinB: 'OUT1', label: 'Position 1 (COM-OUT1)', isClosed: ({ pressed }) => pressed !== true },
+      { pinA: 'COM', pinB: 'OUT2', label: 'Position 2 (COM-OUT2)', isClosed: ({ pressed }) => pressed === true },
+    ],
+  },
+
+  // ==========================================================
+  // Basic passives — always-conducting pass-throughs (see note above).
+  // ==========================================================
+  resistor: {
+    type: 'resistor',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [{ pinA: 'IN', pinB: 'OUT', label: 'Resistor (IN-OUT)', isClosed: () => true }],
+  },
+  capacitor: {
+    type: 'capacitor',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [{ pinA: 'IN', pinB: 'OUT', label: 'Capacitor (IN-OUT)', isClosed: () => true }],
+  },
+  inductor: {
+    type: 'inductor',
+    sourcePins: [],
+    pins: ['IN', 'OUT'],
+    coilPins: [],
+    internalBridges: [{ pinA: 'IN', pinB: 'OUT', label: 'Inductor (IN-OUT)', isClosed: () => true }],
+  },
+
+  // Indicator lamp: a load, not a bridge — just reports whether its single pin is live.
+  pilotLamp: {
+    type: 'pilotLamp',
+    sourcePins: [],
+    pins: ['L'],
+    coilPins: [],
+    internalBridges: [],
+  },
+
+  // Terminal block / busbar: N pins permanently bonded together.
+  terminalBlock: {
+    type: 'terminalBlock',
+    sourcePins: [],
+    pins: ['T1', 'T2', 'T3', 'T4'],
+    coilPins: [],
+    internalBridges: [
+      { pinA: 'T1', pinB: 'T2', label: 'Bus (T1-T2)', isClosed: () => true },
+      { pinA: 'T1', pinB: 'T3', label: 'Bus (T1-T3)', isClosed: () => true },
+      { pinA: 'T1', pinB: 'T4', label: 'Bus (T1-T4)', isClosed: () => true },
     ],
   },
 };

@@ -1,21 +1,36 @@
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
-import type { ElectricalNodeData } from '../../types';
+import type { ComponentType, ElectricalNodeData } from '../../types';
+
+const NO_TYPES: ComponentType[] = ['pushButtonNO', 'limitSwitchNO'];
+
+const ICONS: Partial<Record<ComponentType, string>> = {
+  pushButtonNO: '🔘',
+  pushButtonNC: '🔴',
+  limitSwitchNO: '📍',
+  limitSwitchNC: '📍',
+  emergencyStop: '🛑',
+};
 
 export default function PushButtonNode({ id, data }: NodeProps<ElectricalNodeData>) {
-  const isNO = data.componentType === 'pushButtonNO';
+  const isNO = NO_TYPES.includes(data.componentType);
   const pressed = data.pressed === true;
+  const isEStop = data.componentType === 'emergencyStop';
 
   return (
     <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[130px] relative">
       <div className="font-bold text-xs text-gray-800 mb-1">
-        {isNO ? '🔘' : '🔴'} {data.label}
+        {ICONS[data.componentType] ?? (isNO ? '🔘' : '🔴')} {data.label}
       </div>
       <button
         type="button"
         onClick={() => data.onTogglePress?.(id)}
         className={`w-full text-[11px] font-semibold py-1 rounded transition ${
-          pressed ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 border border-gray-300'
+          pressed
+            ? isEStop
+              ? 'bg-red-700 text-white'
+              : 'bg-green-600 text-white'
+            : 'bg-gray-100 text-gray-700 border border-gray-300'
         }`}
       >
         {pressed ? 'مضغوط' : 'غير مضغوط'}

@@ -182,11 +182,27 @@ export class SimulationService {
         continue;
       }
 
-      if (n.type === 'pushButtonNO' || n.type === 'pushButtonNC') {
+      if (
+        n.type === 'pushButtonNO' ||
+        n.type === 'pushButtonNC' ||
+        n.type === 'emergencyStop' ||
+        n.type === 'limitSwitchNO' ||
+        n.type === 'limitSwitchNC' ||
+        n.type === 'isolatorSwitch' ||
+        n.type === 'circuitBreaker' ||
+        n.type === 'fuse' ||
+        n.type === 'overloadRelay'
+      ) {
         const bridge = def.internalBridges[0];
         const closed = bridge.isClosed({ pressed: n.data?.pressed, coilEnergized: false });
         switches.push({ nodeId: n.nodeId, type: n.type, pressed: n.data?.pressed === true, closed });
         nodesStatus.push({ nodeId: n.nodeId, state: closed ? 'closed' : 'open' });
+        continue;
+      }
+
+      if (n.type === 'selectorSwitch') {
+        const position2 = n.data?.pressed === true;
+        nodesStatus.push({ nodeId: n.nodeId, state: position2 ? 'position-2 (OUT2)' : 'position-1 (OUT1)' });
         continue;
       }
 
@@ -207,7 +223,15 @@ export class SimulationService {
 
       if (n.type === 'power') {
         nodesStatus.push({ nodeId: n.nodeId, state: 'energized' });
+        continue;
       }
+
+      // Generic fallback: basic passives (resistor/capacitor/inductor — always-conducting
+      // pass-throughs), the pilot lamp (a load with no bridge), and the terminal block
+      // (an always-bonded bus). None of these need bespoke result shapes — just report
+      // whether they're currently live.
+      const anyPinEnergized = def.pins.some((p) => energizedPins.has(pinKey(n.nodeId, p)));
+      nodesStatus.push({ nodeId: n.nodeId, state: anyPinEnergized ? 'energized' : 'idle' });
     }
 
     const runningMotors = motors.filter((m) => m.running).length;

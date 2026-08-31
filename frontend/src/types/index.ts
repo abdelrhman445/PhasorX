@@ -9,7 +9,20 @@ export type ComponentType =
   | 'pushButtonNC'
   | 'contactor'
   | 'relay'
-  | 'timer';
+  | 'timer'
+  | 'isolatorSwitch'
+  | 'circuitBreaker'
+  | 'fuse'
+  | 'overloadRelay'
+  | 'emergencyStop'
+  | 'limitSwitchNO'
+  | 'limitSwitchNC'
+  | 'selectorSwitch'
+  | 'resistor'
+  | 'capacitor'
+  | 'inductor'
+  | 'pilotLamp'
+  | 'terminalBlock';
 
 export interface AuthUser {
   id: string;
@@ -28,8 +41,9 @@ export interface AuthResponse {
 export interface ElectricalNodeData {
   componentType: ComponentType;
   label: string;
-  pressed?: boolean; // push buttons only
+  pressed?: boolean; // push buttons / E-STOP / limit switches / toggle-type protective devices / selector position
   delaySeconds?: number; // timer only
+  value?: string; // resistor/capacitor/inductor: display label only (e.g. "220Ω", "100µF", "10mH")
   onTogglePress?: (nodeId: string) => void; // push buttons only — wired in by the canvas
   onChangeDelay?: (nodeId: string, seconds: number) => void; // timer only — wired in by the canvas
 }
