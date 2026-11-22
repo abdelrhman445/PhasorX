@@ -5,6 +5,14 @@ import { useAuthStore } from '../store/authStore';
 import type { Circuit } from '../types';
 import { BoltIcon, CircuitIcon, LogoutIcon, PencilIcon, PlusIcon, TrashIcon } from '../components/icons';
 
+function circuitCountText(n: number): string {
+  if (n === 0) return 'لا توجد دوائر بعد';
+  if (n === 1) return 'دائرة واحدة محفوظة';
+  if (n === 2) return 'دائرتان محفوظتان';
+  if (n <= 10) return `${n} دوائر محفوظة`;
+  return `${n} دائرة محفوظة`;
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -67,7 +75,7 @@ export default function DashboardPage() {
           <div>
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl">دوائري</h2>
             <p className="mt-1 text-sm text-slate-400">
-              {loading ? 'جاري التحميل…' : circuits.length === 0 ? 'لا توجد دوائر بعد' : `${circuits.length} دائرة محفوظة`}
+              {loading ? 'جاري التحميل…' : error ? 'تعذر تحميل الدوائر' : circuitCountText(circuits.length)}
             </p>
           </div>
           <button className="btn-primary" onClick={() => navigate('/workspace')}>
@@ -139,4 +147,4 @@ export default function DashboardPage() {
       </main>
     </div>
   );
-}
+      }
