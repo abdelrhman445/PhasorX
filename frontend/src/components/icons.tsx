@@ -4,8 +4,28 @@ interface IconProps {
 
 export function BoltIcon({ className = '' }: IconProps) {
   return (
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round" className={className} aria-hidden="true">
+      <circle cx="24" cy="24" r="14" />
+      <path d="M24 24 33.5 14.5" />
+      <path d="M33.5 21.5v-7h-7" />
+      <circle cx="24" cy="24" r="2.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function SaveIcon({ className = '' }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />
+      <path d="M17 21v-8H7v8M7 3v5h8" />
+    </svg>
+  );
+}
+
+export function PlayIcon({ className = '' }: IconProps) {
+  return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M13 2 4.6 13.4h6.2L9.4 22l8.4-11.4h-6.2L13 2Z" />
+      <path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.2-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5Z" />
     </svg>
   );
 }
