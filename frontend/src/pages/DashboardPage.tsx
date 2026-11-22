@@ -44,16 +44,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-dvh bg-blueprint">
-      <header className="dash-top">
+      <header className="dash-top topbar-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2.5">
             <span className="logo-badge h-9! w-9! rounded-lg!">
               <BoltIcon />
             </span>
-            <span className="text-lg font-extrabold tracking-tight text-white">PhasorX</span>
+            <span className="font-display text-lg font-bold tracking-tight text-white">Phasor<span className="text-accent">X</span></span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden max-w-40 truncate rounded-full border border-line bg-panel px-3.5 py-1.5 text-xs font-semibold text-slate-300 sm:block">
+            <span className="hidden max-w-44 items-center gap-2 truncate rounded-full border border-line bg-panel px-3.5 py-1.5 text-xs font-semibold text-slate-300 sm:inline-flex">
+              <span className="status-dot" />
               {user?.name}
             </span>
             <button
@@ -97,8 +98,9 @@ export default function DashboardPage() {
         {!loading && circuits.length === 0 && !error && (
           <button
             onClick={() => navigate('/workspace')}
-            className="group flex w-full flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-line px-6 py-16 text-center transition hover:border-accent/60 animate-fade-up"
+            className="group relative flex w-full flex-col items-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed border-line px-6 py-16 text-center transition hover:border-accent/60 animate-fade-up"
           >
+            <BoltIcon className="pointer-events-none absolute -top-8 h-44 w-44 text-accent opacity-[0.05] ltr:-right-8 rtl:-left-8" />
             <span className="grid h-16 w-16 place-items-center rounded-2xl border border-line bg-panel text-accent transition group-hover:scale-105">
               <CircuitIcon className="h-8 w-8" />
             </span>
@@ -147,4 +149,4 @@ export default function DashboardPage() {
       </main>
     </div>
   );
-      }
+}
