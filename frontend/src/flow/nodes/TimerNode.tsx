@@ -6,10 +6,10 @@ export default function TimerNode({ id, data }: NodeProps<ElectricalNodeData>) {
   const delaySeconds = data.delaySeconds ?? 5;
 
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[160px] min-h-[160px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">⏱️ {data.label}</div>
+    <div className="node-shell p-3 text-center min-w-[160px] min-h-[160px] relative">
+      <div className="node-label">⏱️ {data.label}</div>
 
-      <div className="flex items-center justify-center gap-1 text-[10px] text-gray-600 mb-2">
+      <div className="node-sub flex items-center justify-center gap-1 mb-2">
         <span>TON</span>
         <input
           type="number"
@@ -17,7 +17,7 @@ export default function TimerNode({ id, data }: NodeProps<ElectricalNodeData>) {
           step={0.5}
           value={delaySeconds}
           onChange={(e) => data.onChangeDelay?.(id, Number(e.target.value))}
-          className="w-12 border border-gray-300 rounded px-1 py-0.5 text-[10px] text-center"
+          className="node-input w-12 px-1 py-0.5 text-[10px] text-center"
         />
         <span>s</span>
       </div>
