@@ -4,7 +4,7 @@ import PinPair from './PinPair';
 
 export default function TerminalBlockNode({ data }: NodeProps<ElectricalNodeData>) {
   return (
-    <div className="bg-amber-50 border-2 border-amber-800 rounded shadow-md p-3 text-center min-w-[150px] min-h-[110px] relative">
+    <div className="node-shell node-shell-power p-3 text-center min-w-[150px] min-h-[110px] relative">
       <div className="font-bold text-xs text-amber-900 mb-1">🟧 {data.label}</div>
       <div className="text-[9px] text-amber-700 mb-2">بلوك توصيل (Bus)</div>
 
