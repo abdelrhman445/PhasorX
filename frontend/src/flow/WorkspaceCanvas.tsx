@@ -308,7 +308,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
         >
           <Background variant={BackgroundVariant.Dots} color="#22304f" gap={20} size={1.4} />
           <Controls />
-          <MiniMap pannable zoomable />
+          <MiniMap pannable zoomable nodeColor="#3b82f6" maskColor="rgba(6, 10, 19, 0.72)" style={{ background: "#0d1524" }} />
         </ReactFlow>
 
         {/* نتائج المحاكاة */}
@@ -368,4 +368,4 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
       </main>
     </div>
   );
-            }
+}
