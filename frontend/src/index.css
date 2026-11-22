@@ -51,6 +51,8 @@ body {
 
 /* ---------- shared building blocks ---------- */
 
+@layer components {
+
 .bg-blueprint {
   background-image:
     linear-gradient(rgba(120, 144, 190, 0.055) 1px, transparent 1px),
@@ -390,6 +392,8 @@ input:-webkit-autofill:focus {
   border-color: rgba(192, 132, 252, 0.4);
   background: rgba(88, 28, 135, 0.25);
   color: #d8b4fe;
+}
+
 }
 
 /* ---------- reactflow dark theme ---------- */
