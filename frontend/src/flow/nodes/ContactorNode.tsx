@@ -4,9 +4,9 @@ import PinPair from './PinPair';
 
 export default function ContactorNode({ data }: NodeProps<ElectricalNodeData>) {
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[150px] min-h-[220px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">🧲 {data.label}</div>
-      <div className="text-[9px] text-gray-500 mb-2">Coil A1-A2</div>
+    <div className="node-shell p-3 text-center min-w-[150px] min-h-[220px] relative">
+      <div className="node-label">🧲 {data.label}</div>
+      <div className="node-sub mb-2">Coil A1-A2</div>
 
       <PinPair top="14%" leftId="A1" rightId="A2" leftType="target" rightType="target" color="#7c3aed" />
       <PinPair top="34%" leftId="L1" rightId="T1" leftType="target" rightType="source" color="#ef4444" />
