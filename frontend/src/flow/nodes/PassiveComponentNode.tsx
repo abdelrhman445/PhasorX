@@ -16,13 +16,13 @@ const DEFAULT_UNIT: Partial<Record<ComponentType, string>> = {
 
 export default function PassiveComponentNode({ data }: NodeProps<ElectricalNodeData>) {
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[120px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">
+    <div className="node-shell p-3 text-center min-w-[120px] relative">
+      <div className="node-label">
         {ICONS[data.componentType] ?? '🔩'} {data.label}
       </div>
-      {data.value && <div className="text-[10px] text-gray-500">{data.value}</div>}
+      {data.value && <div className="node-sub">{data.value}</div>}
       {!data.value && DEFAULT_UNIT[data.componentType] && (
-        <div className="text-[9px] text-gray-400">قيمة غير محددة ({DEFAULT_UNIT[data.componentType]})</div>
+        <div className="node-sub">قيمة غير محددة ({DEFAULT_UNIT[data.componentType]})</div>
       )}
 
       <Handle type="target" position={Position.Left} id="IN" style={{ top: '50%', background: '#334155' }} />
