@@ -4,8 +4,8 @@ import type { ElectricalNodeData } from '../../types';
 
 export default function MotorNode({ data }: NodeProps<ElectricalNodeData>) {
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[140px] relative">
-      <div className="font-bold text-sm text-gray-800">⚙️ {data.label}</div>
+    <div className="node-shell p-3 text-center min-w-[140px] relative">
+      <div className="node-label text-sm">⚙️ {data.label}</div>
 
       <Handle type="target" position={Position.Left} id="U1" style={{ top: '25%', background: '#ef4444' }} />
       <Handle type="target" position={Position.Left} id="V1" style={{ top: '50%', background: '#eab308' }} />
