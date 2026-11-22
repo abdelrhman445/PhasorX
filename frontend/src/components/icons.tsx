@@ -6,8 +6,8 @@ export function BoltIcon({ className = '' }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round" className={className} aria-hidden="true">
       <circle cx="24" cy="24" r="14" />
-      <path d="M24 24 33.5 14.5" />
-      <path d="M33.5 21.5v-7h-7" />
+      <path d="M24 24 31.6 16.4" />
+      <path d="M34.8 13.2 33.1 19.1 28.9 14.9 Z" fill="currentColor" stroke="none" />
       <circle cx="24" cy="24" r="2.1" fill="currentColor" stroke="none" />
     </svg>
   );
