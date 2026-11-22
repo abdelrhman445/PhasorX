@@ -18,8 +18,8 @@ export default function PushButtonNode({ id, data }: NodeProps<ElectricalNodeDat
   const isEStop = data.componentType === 'emergencyStop';
 
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[130px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">
+    <div className="node-shell p-3 text-center min-w-[130px] relative">
+      <div className="node-label">
         {ICONS[data.componentType] ?? (isNO ? '🔘' : '🔴')} {data.label}
       </div>
       <button
@@ -30,7 +30,7 @@ export default function PushButtonNode({ id, data }: NodeProps<ElectricalNodeDat
             ? isEStop
               ? 'bg-red-700 text-white'
               : 'bg-green-600 text-white'
-            : 'bg-gray-100 text-gray-700 border border-gray-300'
+            : 'bg-panel-2 text-slate-300 border border-line'
         }`}
       >
         {pressed ? 'مضغوط' : 'غير مضغوط'}
