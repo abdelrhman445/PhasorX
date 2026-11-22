@@ -6,8 +6,8 @@ export default function SelectorSwitchNode({ id, data }: NodeProps<ElectricalNod
   const position2 = data.pressed === true;
 
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[140px] min-h-[100px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">🎚️ {data.label}</div>
+    <div className="node-shell p-3 text-center min-w-[140px] min-h-[100px] relative">
+      <div className="node-label">🎚️ {data.label}</div>
       <button
         type="button"
         onClick={() => data.onTogglePress?.(id)}
