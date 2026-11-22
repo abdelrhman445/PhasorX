@@ -37,6 +37,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
   const [saving, setSaving] = useState(false);
   const [simResult, setSimResult] = useState<SimulationResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [savedOk, setSavedOk] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { screenToFlowPosition } = useReactFlow();
 
@@ -182,8 +183,10 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
         const created = await createCircuit(payload);
         setSavedCircuitId(created._id);
       }
+      setSavedOk(true);
+      setTimeout(() => setSavedOk(false), 3000);
     } catch {
-      setErrorMsg('❌ خطأ في الحفظ، تأكد إن سيرفر الباك إند شغال');
+      setErrorMsg('تعذر حفظ الدائرة، حاول مرة أخرى');
     } finally {
       setSaving(false);
     }
@@ -207,7 +210,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
       const result = await runSimulation(simNodes, simWires);
       setSimResult(result);
     } catch {
-      setErrorMsg('❌ خطأ في تشغيل المحاكاة، تأكد إن سيرفر الباك إند شغال');
+      setErrorMsg('تعذر تشغيل المحاكاة، حاول مرة أخرى');
     }
   };
 
@@ -223,13 +226,15 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
   return (
     <div className="relative flex h-full w-full" dir="rtl">
       {/* زر فتح المكتبة على الموبايل */}
-      <button
-        className="btn-ghost absolute top-3 right-3 z-40 py-1.5! text-xs md:hidden"
-        onClick={() => setPaletteOpen((o) => !o)}
-      >
-        {paletteOpen ? <CloseIcon className="h-3.5 w-3.5" /> : <ComponentsIcon className="h-3.5 w-3.5" />}
-        العناصر
-      </button>
+      {!paletteOpen && (
+        <button
+          className="btn-ghost absolute top-3 right-3 z-40 py-1.5! text-xs md:hidden"
+          onClick={() => setPaletteOpen(true)}
+        >
+          <ComponentsIcon className="h-3.5 w-3.5" />
+          العناصر
+        </button>
+      )}
 
       {paletteOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 md:hidden" onClick={() => setPaletteOpen(false)} />
@@ -245,10 +250,13 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
           <span className="logo-badge h-8! w-8! rounded-lg!">
             <BoltIcon />
           </span>
-          <div>
+          <div className="flex-1">
             <h2 className="text-sm font-extrabold text-white">مكتبة العناصر</h2>
             <p className="text-[10px] text-slate-500">اسحب أي عنصر إلى الكانفاس</p>
           </div>
+          <button className="icon-btn h-7! w-7! md:hidden" onClick={() => setPaletteOpen(false)}>
+            <CloseIcon />
+          </button>
         </div>
 
         <div className="mb-4 grid grid-cols-2 gap-2">
@@ -283,6 +291,8 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
 
         {errorMsg && <div className="alert-error mt-3 animate-fade-in">{errorMsg}</div>}
 
+        {savedOk && <div className="alert-ok mt-3 animate-fade-in">✓ تم حفظ الدائرة بنجاح</div>}
+
         <div className="mt-auto space-y-2 pt-4">
           <button onClick={handleSaveCircuit} disabled={saving} className="btn-primary w-full">
             {saving ? 'جاري الحفظ…' : '💾 حفظ الدائرة'}
@@ -308,7 +318,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
         >
           <Background variant={BackgroundVariant.Dots} color="#22304f" gap={20} size={1.4} />
           <Controls />
-          <MiniMap pannable zoomable nodeColor="#3b82f6" maskColor="rgba(6, 10, 19, 0.72)" style={{ background: "#0d1524" }} />
+          <MiniMap pannable zoomable className="max-md:hidden" nodeColor="#3b82f6" maskColor="rgba(6, 10, 19, 0.72)" style={{ background: "#0d1524" }} />
         </ReactFlow>
 
         {/* نتائج المحاكاة */}
