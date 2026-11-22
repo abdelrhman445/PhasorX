@@ -17,7 +17,7 @@ import { nodeTypes } from './nodes';
 import { COMPONENT_LIBRARY, labelForComponentType } from './componentLibrary';
 import type { ComponentType, ElectricalNodeData, SimulationResult } from '../types';
 import { createCircuit, fetchCircuit, runSimulation, updateCircuit } from '../api/circuits';
-import { BoltIcon, CloseIcon, ComponentsIcon } from '../components/icons';
+import { BoltIcon, CloseIcon, ComponentsIcon, PlayIcon, SaveIcon } from '../components/icons';
 
 let idCounter = 0;
 const getId = () => `node_${Date.now()}_${idCounter++}`;
@@ -295,10 +295,12 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
 
         <div className="mt-auto space-y-2 pt-4">
           <button onClick={handleSaveCircuit} disabled={saving} className="btn-primary w-full">
-            {saving ? 'جاري الحفظ…' : '💾 حفظ الدائرة'}
+            <SaveIcon className="h-4 w-4" />
+            {saving ? 'جاري الحفظ…' : 'حفظ الدائرة'}
           </button>
           <button onClick={handleRunSimulation} className="btn-sim w-full">
-            ▶️ تشغيل المحاكاة
+            <PlayIcon className="h-4 w-4" />
+            تشغيل المحاكاة
           </button>
         </div>
       </aside>
@@ -378,4 +380,4 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
       </main>
     </div>
   );
-}
+              }
