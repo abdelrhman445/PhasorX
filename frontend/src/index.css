@@ -460,6 +460,86 @@ input:-webkit-autofill:focus {
   color: #d8b4fe;
 }
 
+/* ---------- canvas nodes & route transitions ---------- */
+
+.route-fade {
+  animation: route-in 0.35s ease both;
+}
+@keyframes route-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.node-shell {
+  border: 1.5px solid var(--color-line);
+  background: linear-gradient(165deg, #131e33, #0b1220);
+  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(226, 236, 255, 0.06);
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s, filter 0.18s;
+}
+.node-shell:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(226, 236, 255, 0.08);
+  transform: translateY(-2px);
+}
+.react-flow__node.selected .node-shell {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35), 0 16px 32px -12px rgba(0, 0, 0, 0.9);
+}
+.node-shell-round {
+  border-radius: 999px;
+}
+.node-shell-power {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(165deg, #241d0c, #14100a);
+}
+.node-label {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #e6edf9;
+  margin-bottom: 0.25rem;
+}
+.node-sub {
+  font-size: 9px;
+  color: #8fa0bd;
+}
+.node-input {
+  border: 1px solid var(--color-line);
+  border-radius: 0.35rem;
+  background: rgba(6, 10, 19, 0.65);
+  color: #e6edf9;
+  outline: none;
+}
+.node-input:focus {
+  border-color: rgba(245, 158, 11, 0.6);
+}
+
+.react-flow__handle {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.react-flow__handle:hover {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.22);
+}
+.react-flow__connection-path {
+  stroke: var(--color-accent);
+  stroke-dasharray: 6 4;
+  stroke-width: 2;
+}
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 4px rgba(120, 160, 255, 0.45));
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn-ghost:active {
+  transform: scale(0.97);
+}
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
 /* ---------- luxury details ---------- */
 
 .status-dot {
