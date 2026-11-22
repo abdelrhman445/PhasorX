@@ -631,19 +631,21 @@ input:-webkit-autofill:focus {
 .react-flow {
   background: transparent;
 }
-.react-flow__controls {
+.react-flow__controls.react-flow__controls {
   border-radius: 0.7rem;
   overflow: hidden;
   border: 1px solid var(--color-line);
+  background: #0d1524;
   box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.7);
 }
-.react-flow__controls-button {
+.react-flow__controls .react-flow__controls-button {
   background: #0d1524;
   border-bottom: 1px solid var(--color-line);
   fill: #8fa0bd;
 }
-.react-flow__controls-button:hover {
+.react-flow__controls .react-flow__controls-button:hover {
   background: #16213a;
+  fill: #e6edf9;
 }
 .react-flow__minimap {
   border-radius: 0.7rem;
