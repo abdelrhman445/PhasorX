@@ -9,7 +9,7 @@ export default function WorkspacePage() {
 
   return (
     <div className="flex h-dvh w-full flex-col bg-ink">
-      <header className="z-20 flex items-center justify-between gap-3 border-b border-line bg-panel/80 px-3 py-2 backdrop-blur sm:px-4">
+      <header className="topbar-line z-20 flex items-center justify-between gap-3 border-b border-line bg-panel/80 px-3 py-2 backdrop-blur sm:px-4">
         <button className="btn-ghost py-1.5! text-xs" onClick={() => navigate('/dashboard')}>
           <ArrowBackIcon className="h-3.5 w-3.5" />
           لوحة التحكم
@@ -18,8 +18,9 @@ export default function WorkspacePage() {
           <span className="logo-badge h-7! w-7! rounded-md!">
             <BoltIcon />
           </span>
-          <span className="text-sm font-extrabold tracking-tight text-white">
-            PhasorX <span className="hidden font-semibold text-slate-400 sm:inline">— مساحة العمل</span>
+          <span className="font-display text-sm font-bold tracking-tight text-white">
+            Phasor<span className="text-accent">X</span>{' '}
+            <span className="hidden font-sans font-semibold text-slate-400 sm:inline">— مساحة العمل</span>
           </span>
         </div>
       </header>
