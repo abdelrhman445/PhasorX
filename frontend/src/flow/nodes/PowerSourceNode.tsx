@@ -4,7 +4,7 @@ import type { ElectricalNodeData } from '../../types';
 
 export default function PowerSourceNode({ data }: NodeProps<ElectricalNodeData>) {
   return (
-    <div className="node-shell p-3 text-center min-w-[140px] relative">
+    <div className="node-shell node-shell-power p-3 text-center min-w-[140px] relative">
       <div className="node-label text-sm">⚡️ {data.label}</div>
 
       <Handle type="source" position={Position.Right} id="L1" style={{ top: '25%', background: '#ef4444' }} />
