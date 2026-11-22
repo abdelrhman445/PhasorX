@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { loginRequest } from '../api/auth';
 import { getErrorMessage } from '../api/client';
 import { useAuthStore } from '../store/authStore';
-import { BoltIcon } from '../components/icons';
+import { BoltIcon, CircuitIcon, PlayIcon, SaveIcon } from '../components/icons';
+import WaveBackground from '../components/WaveBackground';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function LoginPage() {
   return (
     <div className="auth-screen bg-blueprint">
       <div className="auth-glow" aria-hidden="true" />
+      <WaveBackground />
 
       <div className="auth-card glass animate-fade-up">
         <div className="flex items-center gap-3">
@@ -39,7 +41,7 @@ export default function LoginPage() {
             <BoltIcon />
           </span>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-white">PhasorX</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-white">Phasor<span className="text-accent">X</span></h1>
             <p className="text-xs text-slate-400">محاكي دوائر التحكم الكلاسيك</p>
           </div>
         </div>
@@ -88,6 +90,12 @@ export default function LoginPage() {
             أنشئ حسابًا جديدًا
           </Link>
         </p>
+
+        <div className="auth-feats">
+          <span className="feat"><CircuitIcon /> كانفاس تفاعلي</span>
+          <span className="feat"><PlayIcon /> محاكاة لحظية</span>
+          <span className="feat"><SaveIcon /> حفظ سحابي</span>
+        </div>
       </div>
 
       <p className="auth-foot">PhasorX — منصة تصميم ومحاكاة دوائر التحكم الكهربائية</p>
