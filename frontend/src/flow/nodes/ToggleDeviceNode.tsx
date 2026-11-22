@@ -18,8 +18,8 @@ export default function ToggleDeviceNode({ id, data }: NodeProps<ElectricalNodeD
   const [leftId, rightId] = PIN_IDS[data.componentType] ?? ['IN', 'OUT'];
 
   return (
-    <div className="bg-white border-2 border-gray-800 rounded shadow-md p-3 text-center min-w-[130px] relative">
-      <div className="font-bold text-xs text-gray-800 mb-1">
+    <div className="node-shell p-3 text-center min-w-[130px] relative">
+      <div className="node-label">
         {ICONS[data.componentType] ?? '🔧'} {data.label}
       </div>
       <button
