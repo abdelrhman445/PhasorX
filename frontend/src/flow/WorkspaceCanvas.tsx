@@ -3,6 +3,7 @@ import type { DragEvent } from 'react';
 import ReactFlow, {
   addEdge,
   Background,
+  BackgroundVariant,
   Controls,
   MiniMap,
   applyNodeChanges,
@@ -16,6 +17,7 @@ import { nodeTypes } from './nodes';
 import { COMPONENT_LIBRARY, labelForComponentType } from './componentLibrary';
 import type { ComponentType, ElectricalNodeData, SimulationResult } from '../types';
 import { createCircuit, fetchCircuit, runSimulation, updateCircuit } from '../api/circuits';
+import { BoltIcon, CloseIcon, ComponentsIcon } from '../components/icons';
 
 let idCounter = 0;
 const getId = () => `node_${Date.now()}_${idCounter++}`;
@@ -35,6 +37,7 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
   const [saving, setSaving] = useState(false);
   const [simResult, setSimResult] = useState<SimulationResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const { screenToFlowPosition } = useReactFlow();
 
   const handleTogglePress = useCallback((nodeId: string) => {
@@ -209,62 +212,89 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
   };
 
   if (loading) {
-    return <div className="flex h-full w-full items-center justify-center text-gray-500">...جاري التحميل</div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center gap-3 text-sm text-slate-400" dir="rtl">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-accent" />
+        جاري تحميل الدائرة…
+      </div>
+    );
   }
 
   return (
-    <div className="flex h-full w-full bg-gray-50" dir="rtl">
-      {/* القائمة الجانبية */}
-      <aside className="w-72 bg-white border-l border-gray-200 p-5 shadow-lg flex flex-col z-10 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4 text-blue-800 border-b pb-2">مكتبة العناصر</h2>
+    <div className="relative flex h-full w-full" dir="rtl">
+      {/* زر فتح المكتبة على الموبايل */}
+      <button
+        className="btn-ghost absolute top-3 right-3 z-40 py-1.5! text-xs md:hidden"
+        onClick={() => setPaletteOpen((o) => !o)}
+      >
+        {paletteOpen ? <CloseIcon className="h-3.5 w-3.5" /> : <ComponentsIcon className="h-3.5 w-3.5" />}
+        العناصر
+      </button>
 
-        <div className="space-y-2 mb-4">
+      {paletteOpen && (
+        <div className="fixed inset-0 z-20 bg-black/60 md:hidden" onClick={() => setPaletteOpen(false)} />
+      )}
+
+      {/* القائمة الجانبية */}
+      <aside
+        className={`palette-panel fixed inset-y-0 right-0 z-30 flex w-72 flex-col overflow-y-auto p-4 transition-transform duration-300 md:static md:z-auto md:translate-x-0 ${
+          paletteOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="mb-4 flex items-center gap-2.5 border-b border-line pb-3">
+          <span className="logo-badge h-8! w-8! rounded-lg!">
+            <BoltIcon />
+          </span>
+          <div>
+            <h2 className="text-sm font-extrabold text-white">مكتبة العناصر</h2>
+            <p className="text-[10px] text-slate-500">اسحب أي عنصر إلى الكانفاس</p>
+          </div>
+        </div>
+
+        <div className="mb-4 grid grid-cols-2 gap-2">
           {COMPONENT_LIBRARY.map((item) => (
             <div
               key={item.componentType}
               onDragStart={(e) => onDragStart(e, item.componentType)}
               draggable
-              className="p-2.5 bg-gray-50 rounded cursor-grab border border-gray-300 hover:bg-blue-50 transition shadow-sm text-center text-sm font-medium"
+              className="palette-chip"
             >
-              {item.icon} {item.label}
+              <span className="chip-icon">{item.icon}</span>
+              {item.label}
             </div>
           ))}
         </div>
 
-        <div className="border-t pt-4 space-y-2">
-          <label className="block text-xs font-semibold text-gray-600">اسم الدائرة</label>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
-          />
-          <label className="flex items-center gap-2 text-xs text-gray-600">
-            <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+        <div className="space-y-3 border-t border-line pt-4">
+          <label className="field-label">
+            اسم الدائرة
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="field" />
+          </label>
+          <label className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              className="h-4 w-4 accent-amber-500"
+            />
             دائرة عامة (يمكن لأي شخص رؤيتها)
           </label>
         </div>
 
-        {errorMsg && <div className="mt-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2">{errorMsg}</div>}
+        {errorMsg && <div className="alert-error mt-3 animate-fade-in">{errorMsg}</div>}
 
-        <div className="mt-auto pt-4 space-y-2">
-          <button
-            onClick={handleSaveCircuit}
-            disabled={saving}
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition shadow-md disabled:opacity-60"
-          >
-            {saving ? '... جاري الحفظ' : '💾 حفظ الدائرة'}
+        <div className="mt-auto space-y-2 pt-4">
+          <button onClick={handleSaveCircuit} disabled={saving} className="btn-primary w-full">
+            {saving ? 'جاري الحفظ…' : '💾 حفظ الدائرة'}
           </button>
-          <button
-            onClick={handleRunSimulation}
-            className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition shadow-md"
-          >
+          <button onClick={handleRunSimulation} className="btn-sim w-full">
             ▶️ تشغيل المحاكاة
           </button>
         </div>
       </aside>
 
       {/* مساحة العمل */}
-      <main className="flex-1 h-full relative" dir="ltr" ref={reactFlowWrapper}>
+      <main className="relative h-full min-w-0 flex-1" dir="ltr" ref={reactFlowWrapper}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -276,57 +306,66 @@ export default function WorkspaceCanvas({ circuitId }: WorkspaceCanvasProps) {
           onDrop={onDrop}
           fitView
         >
-          <Background color="#ccc" gap={16} />
+          <Background variant={BackgroundVariant.Dots} color="#22304f" gap={20} size={1.4} />
           <Controls />
-          <MiniMap />
+          <MiniMap pannable zoomable />
         </ReactFlow>
-      </main>
 
-      {/* نتائج المحاكاة */}
-      {simResult && (
-        <div dir="rtl" className="absolute top-4 left-4 w-80 bg-white border border-gray-300 rounded-lg shadow-xl p-4 z-20 max-h-[80vh] overflow-y-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-sm text-gray-800">⚡️ نتيجة المحاكاة</h3>
-            <button onClick={() => setSimResult(null)} className="text-gray-400 hover:text-gray-700 text-sm">
-              ✕
-            </button>
+        {/* نتائج المحاكاة */}
+        {simResult && (
+          <div dir="rtl" className="sim-panel absolute top-3 left-3 z-20 max-h-[80dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto p-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="flex items-center gap-1.5 text-sm font-extrabold text-white">
+                <BoltIcon className="h-4 w-4 text-accent" />
+                نتيجة المحاكاة
+              </h3>
+              <button onClick={() => setSimResult(null)} className="icon-btn h-7! w-7!">
+                <CloseIcon />
+              </button>
+            </div>
+            <p className="mb-3 text-xs leading-relaxed text-slate-400">{simResult.message}</p>
+
+            {simResult.results.motors.length > 0 && (
+              <div className="mb-3">
+                <div className="mb-1.5 text-[11px] font-bold text-slate-300">الموتورات</div>
+                <div className="space-y-1">
+                  {simResult.results.motors.map((m) => (
+                    <div key={m.nodeId} className={`sim-pill ${m.running ? 'on-green' : ''}`}>
+                      {m.label}: {m.running ? '🟢 يعمل' : `⚪️ متوقف ${m.missingPhases.length ? '(ناقص: ' + m.missingPhases.join(', ') + ')' : ''}`}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {simResult.results.coils.length > 0 && (
+              <div className="mb-3">
+                <div className="mb-1.5 text-[11px] font-bold text-slate-300">الكونتاكتورات / الريلايات / التايمرات</div>
+                <div className="space-y-1">
+                  {simResult.results.coils.map((c) => (
+                    <div key={c.nodeId} className={`sim-pill ${c.coilEnergized ? 'on-purple' : ''}`}>
+                      {c.type}: {c.coilEnergized ? '🟣 ملف نشط' : '⚪️ ملف غير نشط'}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {simResult.results.switches.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-[11px] font-bold text-slate-300">أزرار الضغط</div>
+                <div className="space-y-1">
+                  {simResult.results.switches.map((s) => (
+                    <div key={s.nodeId} className={`sim-pill ${s.closed ? 'on-green' : ''}`}>
+                      {s.type}: {s.closed ? '🟢 موصل' : '⚪️ مفتوح'} {s.pressed ? '(مضغوط)' : ''}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <p className="text-xs text-gray-600 mb-3">{simResult.message}</p>
-
-          {simResult.results.motors.length > 0 && (
-            <div className="mb-3">
-              <div className="text-xs font-semibold text-gray-700 mb-1">الموتورات</div>
-              {simResult.results.motors.map((m) => (
-                <div key={m.nodeId} className={`text-xs rounded p-2 mb-1 ${m.running ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-600'}`}>
-                  {m.label}: {m.running ? '🟢 يعمل' : `⚪️ متوقف ${m.missingPhases.length ? '(ناقص: ' + m.missingPhases.join(', ') + ')' : ''}`}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {simResult.results.coils.length > 0 && (
-            <div className="mb-3">
-              <div className="text-xs font-semibold text-gray-700 mb-1">الكونتاكتورات / الريلايات / التايمرات</div>
-              {simResult.results.coils.map((c) => (
-                <div key={c.nodeId} className={`text-xs rounded p-2 mb-1 ${c.coilEnergized ? 'bg-purple-50 text-purple-700' : 'bg-gray-50 text-gray-600'}`}>
-                  {c.type}: {c.coilEnergized ? '🟣 ملف نشط' : '⚪️ ملف غير نشط'}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {simResult.results.switches.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-gray-700 mb-1">أزرار الضغط</div>
-              {simResult.results.switches.map((s) => (
-                <div key={s.nodeId} className="text-xs rounded p-2 mb-1 bg-gray-50 text-gray-600">
-                  {s.type}: {s.closed ? '🟢 موصل' : '⚪️ مفتوح'} {s.pressed ? '(مضغوط)' : ''}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
-}
+            }
